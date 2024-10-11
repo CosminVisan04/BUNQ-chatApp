@@ -1,8 +1,5 @@
 <?php
 
-// Use the Capsule instance passed from index.php
-echo "Running migration...\n";
-
 // Check if the 'users' table exists before creating it
 if (!$capsule->schema()->hasTable('users')) {
     $capsule->schema()->create('users', function ($table) {
@@ -12,8 +9,6 @@ if (!$capsule->schema()->hasTable('users')) {
         $table->timestamps(); // Created_at and updated_at timestamps
     });
     echo "Users table created.\n";
-} else {
-    echo "Users table already exists.\n";
 }
 
 // Check if the 'groups' table exists before creating it
@@ -24,8 +19,6 @@ if (!$capsule->schema()->hasTable('groups')) {
         $table->timestamps(); // Created_at and updated_at timestamps
     });
     echo "Groups table created.\n";
-} else {
-    echo "Groups table already exists.\n";
 }
 
 // Check if the 'messages' table exists before creating it
@@ -42,6 +35,4 @@ if (!$capsule->schema()->hasTable('messages')) {
         $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
     });
     echo "Messages table created.\n";
-} else {
-    echo "Messages table already exists.\n";
 }

@@ -17,7 +17,7 @@ return function (App $app) {
 
     // Root route (optional)
     $app->get('/', function (Request $request, Response $response) {
-        $response->getBody()->write('Hello world!');
+        $response->getBody()->write('Welcom to the chat app!');
         return $response;
     });
 
@@ -71,13 +71,12 @@ return function (App $app) {
             return $response->withHeader('Content-Type', 'application/json');
         });
 
-        // Join a group (optional logic for user joining a group)
+        // Join a group
         $group->post('/{group_id}/join', function (Request $request, Response $response, array $args) {
             $group = Capsule::table('groups')->where('id', $args['group_id'])->first();
             if (!$group) {
                 return $response->withStatus(404)->write(json_encode(['error' => 'Group not found']));
             }
-            // No actual join logic since groups are public
             $response->getBody()->write(json_encode(['message' => 'Joined group']));
             return $response->withHeader('Content-Type', 'application/json');
         });
