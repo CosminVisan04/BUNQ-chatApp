@@ -1,44 +1,32 @@
 <?php
 
-declare(strict_types=1);
-
-use PHPUnit\Framework\TestCase;
-use Slim\App;
-use Slim\Psr7\Factory\ServerRequestFactory;
-use Slim\Psr7\Response;
 use Slim\Factory\AppFactory;
+use Slim\Psr7\Factory\ServerRequestFactory;
+use PHPUnit\Framework\TestCase;
 
 class RootActionTest extends TestCase
 {
-    public function testRootRoute()
+    protected $app;
+
+    protected function setUp(): void
     {
-        // Create an instance of the Slim app
-        $app = $this->createApp();
+        // Create the Slim app using AppFactory
+        $this->app = AppFactory::create();
 
-        // Create a request to the root URL '/'
-        $request = (new ServerRequestFactory())->createServerRequest('GET', '/');
-        $response = new Response();
-
-        // Execute the application and get the response
-        $response = $app->handle($request);
-
-        // Check if the status code is 200
-        $this->assertEquals(200, $response->getStatusCode());
-
-        // Check if the response body contains 'Welcome to the chat app!'
-        $body = (string) $response->getBody();
-        $this->assertStringContainsString('Welcome to the chat app!', $body);
+        // Load the routes
+        (require __DIR__ . '/../app/routes.php')($this->app);
     }
 
-    // Create a Slim app instance with routes and settings
-    private function createApp(): App
+    // Test root route (GET /)
+    public function testRootRoute()
     {
-        $app = AppFactory::create();
+        $requestFactory = new ServerRequestFactory();
+        $request = $requestFactory->createServerRequest('GET', '/');
 
-        // Include the routes from your routes.php
-        require __DIR__ . '/../app/routes.php';
+        $response = $this->app->handle($request);
+        $this->assertEquals(200, $response->getStatusCode());
 
-
-        return $app;
+        $responseBody = (string) $response->getBody();
+        $this->assertStringContainsString('Welcome to the chat app!', $responseBody);
     }
 }

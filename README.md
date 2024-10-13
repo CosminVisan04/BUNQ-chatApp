@@ -9,6 +9,7 @@ This is a simple chat application backend built using the Slim PHP framework and
 - [Running the Application](#running-the-application)
 - [API Endpoints](#api-endpoints)
 - [Database](#database)
+- [Testing](#testing)
 
 ## Features
 
@@ -363,3 +364,48 @@ The `messages` table stores the messages exchanged between users in different gr
 - The `user_id` column in the `messages` table references the `id` column in the `users` table.
 
 These foreign key constraints ensure referential integrity, meaning that a message must belong to a valid group and be sent by a valid user.
+
+
+
+Here is your modified `README.md` section for testing, updated to correspond to the provided testing files:
+
+## Testing
+
+This project includes PHPUnit tests for the different routes defined in the application. The tests cover functionalities for users, groups, and messages, ensuring that the API works as expected. The tests are designed to run in isolation, leaving the database in its original state after the tests are completed, using transactions that roll back after each test.
+
+### Running the Tests
+
+To run all the tests, use the following command:
+
+```bash
+vendor/bin/phpunit tests/
+```
+
+This will execute all the test files in the `tests/` directory, including:
+
+- `UserRoutesTest.php`
+- `GroupRoutesTest.php`
+- `MessageRoutesTest.php`
+
+### What is Tested
+
+The project includes the following test files, each covering different aspects of the API:
+
+1. **UserRoutesTest.php**
+   - **Test creating a user** (`POST /users`): Verifies that a new user can be created and stored in the database. The test also ensures the user is properly inserted within the transaction, and then the transaction is rolled back.
+   - **Test fetching all users** (`GET /users`): Verifies that all users are correctly retrieved from the database. The test inserts a user into the database and verifies that the user is included in the list.
+   - **Test fetching a user by ID** (`GET /users/{id}`): Verifies that a specific user can be retrieved by their ID. The test inserts a user and verifies the correct user is returned.
+   - **Test fetching a non-existing user** (`GET /users/{id}`): Verifies that the API responds with a 404 status when trying to retrieve a non-existing user.
+
+2. **GroupRoutesTest.php**
+   - **Test creating a group** (`POST /groups`): Verifies that a new group can be created and stored in the database. The test ensures the group is properly inserted and then rolls back the transaction.
+   - **Test fetching all groups** (`GET /groups`): Verifies that all groups are correctly retrieved from the database. The test inserts a group into the database and checks that the group appears in the results.
+   - **Test joining a group** (`POST /groups/{group_id}/join`): Verifies that a user can join a group. The test ensures the join action works as expected, and then the transaction is rolled back.
+   - **Test fetching messages in a group** (`GET /groups/{group_id}/messages`): Verifies that messages in a specific group can be retrieved. The test inserts a message for the group and checks that it appears in the results.
+   - **Test fetching messages for a non-existing group** (`GET /groups/{group_id}/messages`): Verifies that the API responds with a 404 status when trying to retrieve messages for a non-existing group.
+
+3. **MessageRoutesTest.php**
+   - **Test sending a message to a group** (`POST /groups/{group_id}/messages`): Verifies that a message can be sent to a group. The test inserts a group and then sends a message, verifying that the message is correctly stored.
+   - **Test fetching all messages in a group** (`GET /groups/{group_id}/messages`): Verifies that messages in a specific group can be retrieved. The test inserts a message for the group and ensures it is the only message returned in the response.
+   - **Test fetching messages for a non-existing group** (`GET /groups/{group_id}/messages`): Verifies that the API responds with a 404 status when trying to retrieve messages for a non-existing group.
+
