@@ -21,12 +21,6 @@ return function (App $app) {
         return $response;
     });
 
-    // Error helper function for standard error responses
-    function errorResponse(Response $response, int $status, string $message) {
-        $response->getBody()->write(json_encode(['error' => $message]));
-        return $response->withHeader('Content-Type', 'application/json')->withStatus($status);
-    }
-
     // User routes
     $app->group('/users', function (Group $group) {
 
@@ -37,7 +31,8 @@ return function (App $app) {
                 $response->getBody()->write(json_encode($users));
                 return $response->withHeader('Content-Type', 'application/json');
             } catch (\Exception $e) {
-                return errorResponse($response, 500, 'Unable to fetch users');
+                $response->getBody()->write(json_encode(['error' => 'Unable to fetch users']));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
             }
         });
 
@@ -52,7 +47,8 @@ return function (App $app) {
                 $response->getBody()->write(json_encode(['message' => 'User created']));
                 return $response->withHeader('Content-Type', 'application/json');
             } catch (\Exception $e) {
-                return errorResponse($response, 500, 'Unable to create user');
+                $response->getBody()->write(json_encode(['error' => 'Unable to create user']));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
             }
         });
 
@@ -61,12 +57,14 @@ return function (App $app) {
             try {
                 $user = Capsule::table('users')->where('id', $args['id'])->first();
                 if (!$user) {
-                    return errorResponse($response, 404, 'User not found');
+                    $response->getBody()->write(json_encode(['error' => 'User not found']));
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
                 }
                 $response->getBody()->write(json_encode($user));
                 return $response->withHeader('Content-Type', 'application/json');
             } catch (\Exception $e) {
-                return errorResponse($response, 500, 'Unable to fetch user');
+                $response->getBody()->write(json_encode(['error' => 'Unable to fetch user']));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
             }
         });
     });
@@ -81,7 +79,8 @@ return function (App $app) {
                 $response->getBody()->write(json_encode($groups));
                 return $response->withHeader('Content-Type', 'application/json');
             } catch (\Exception $e) {
-                return errorResponse($response, 500, 'Unable to fetch groups');
+                $response->getBody()->write(json_encode(['error' => 'Unable to fetch groups']));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
             }
         });
 
@@ -93,7 +92,8 @@ return function (App $app) {
                 $response->getBody()->write(json_encode(['message' => 'Group created']));
                 return $response->withHeader('Content-Type', 'application/json');
             } catch (\Exception $e) {
-                return errorResponse($response, 500, 'Unable to create group');
+                $response->getBody()->write(json_encode(['error' => 'Unable to create group']));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
             }
         });
 
@@ -102,12 +102,14 @@ return function (App $app) {
             try {
                 $group = Capsule::table('groups')->where('id', $args['group_id'])->first();
                 if (!$group) {
-                    return errorResponse($response, 404, 'Group not found');
+                    $response->getBody()->write(json_encode(['error' => 'Group not found']));
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
                 }
                 $response->getBody()->write(json_encode(['message' => 'Joined group']));
                 return $response->withHeader('Content-Type', 'application/json');
             } catch (\Exception $e) {
-                return errorResponse($response, 500, 'Unable to join group');
+                $response->getBody()->write(json_encode(['error' => 'Unable to join group']));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
             }
         });
 
@@ -116,12 +118,14 @@ return function (App $app) {
             try {
                 $messages = Capsule::table('messages')->where('group_id', $args['group_id'])->get();
                 if ($messages->isEmpty()) {
-                    return errorResponse($response, 404, 'No messages found in this group');
+                    $response->getBody()->write(json_encode(['error' => 'No messages found in this group']));
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
                 }
                 $response->getBody()->write(json_encode($messages));
                 return $response->withHeader('Content-Type', 'application/json');
             } catch (\Exception $e) {
-                return errorResponse($response, 500, 'Unable to fetch messages');
+                $response->getBody()->write(json_encode(['error' => 'Unable to fetch messages']));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
             }
         });
 
@@ -131,7 +135,8 @@ return function (App $app) {
                 $data = $request->getParsedBody();
                 $group = Capsule::table('groups')->where('id', $args['group_id'])->first();
                 if (!$group) {
-                    return errorResponse($response, 404, 'Group not found');
+                    $response->getBody()->write(json_encode(['error' => 'Group not found']));
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
                 }
 
                 Capsule::table('messages')->insert([
@@ -145,7 +150,8 @@ return function (App $app) {
                 $response->getBody()->write(json_encode(['message' => 'Message sent']));
                 return $response->withHeader('Content-Type', 'application/json');
             } catch (\Exception $e) {
-                return errorResponse($response, 500, 'Unable to send message');
+                $response->getBody()->write(json_encode(['error' => 'Unable to send message']));
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
             }
         });
     });
